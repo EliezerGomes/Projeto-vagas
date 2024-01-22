@@ -6,7 +6,7 @@
                     <div>{{ titulo }}</div>
                     <div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox">
+                            <input class="form-check-input" type="checkbox" v-model="favoritada">
                             <label class="form-check-label">Favoritar</label>
                         </div>
                     </div>
@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, ref, watch } from 'vue';
+import { emitter } from '@/main';
 
 export default defineComponent({
     name: "Vaga",
@@ -59,6 +60,7 @@ export default defineComponent({
         },
     }, 
     setup(props) {
+        const favoritada = ref(false)
         const getModalidade = computed(() => {
             switch(props.modalidade) {
                 case '1': 
@@ -82,7 +84,18 @@ export default defineComponent({
             return auxFormat.toLocaleDateString('pt-BR')
         })
 
-        return { getModalidade, getTipo, formatData }
+        watch (
+            () => favoritada.value,
+            () => {
+                if (favoritada.value) {
+                    emitter.emit('favoritarVaga', props.titulo)
+                } else {
+                    emitter.emit('desfavoritarVaga', props.titulo)
+                }
+            }
+        )
+
+        return { getModalidade, getTipo, formatData, favoritada }
     }
 })
 </script>
