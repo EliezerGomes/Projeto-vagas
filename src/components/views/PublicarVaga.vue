@@ -68,6 +68,7 @@
 
 <script>
 import { ref } from "vue";
+import { emitter } from "@/main";
 export default {
   name: "PublicarVaga",
   setup() {
@@ -80,8 +81,8 @@ export default {
     function publicarVaga() {
       let vagas = JSON.parse(localStorage.getItem("vagas"));
 
-      const auxData = new Date(Date.now())
-      const dataPublicacao = auxData.toISOString()
+      const auxData = new Date(Date.now());
+      const dataPublicacao = auxData.toISOString();
 
       if (!vagas) vagas = [];
       vagas.push({
@@ -90,11 +91,22 @@ export default {
         salario: salario.value,
         modaliade: modaliade.value,
         tipo: tipo.value,
-        publicacao: dataPublicacao
+        publicacao: dataPublicacao,
       });
 
-      console.log(vagas);
       localStorage.setItem("vagas", JSON.stringify(vagas));
+
+      resetaFormulario();
+
+      emitter.emit('alerta')
+    }
+
+    function resetaFormulario() {
+      titulo.value = "", 
+      descricao.value = "",
+      salario.value = "", 
+      modaliade.value = "", 
+      tipo.value = ""
     }
 
     return {
